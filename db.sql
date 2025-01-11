@@ -44,3 +44,11 @@ ALTER TABLE `events`
 	MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 
+-- -- Titre de l'evenenement
+--
+-- CREATE TABLE IF NOT EXISTS title_events (
+--                                       'id' INT AUTO_INCREMENT PRIMARY KEY,
+--                                       'title' VARCHAR(255) NOT NULL,
+--                                       'start' DATETIME NOT NULL,
+--                                       'end' DATETIME NOT NULL
+--     );

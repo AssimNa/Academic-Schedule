@@ -113,6 +113,7 @@
     }
 
 </style>
+
 <script>
     $(document).ready(function () {
         var calendar = $('#calendar').fullCalendar({
@@ -244,187 +245,82 @@
     });
 
 </script>
-<!--+creer events-->
-<script>
-    // Event data array
-    let events = [];
-
-    // Save event
-    function save_event() {
-        const eventName = document.getElementById("event_name").value;
-        const startDate = document.getElementById("event_start_date").value;
-        const endDate = document.getElementById("event_end_date").value;
-
-        if (eventName && startDate && endDate) {
-            const newEvent = {
-                id: Date.now(), // Unique ID for the event
-                name: eventName,
-                start: startDate,
-                end: endDate,
-            };
-
-            events.push(newEvent);
-            displayEvents();
-            resetForm();
-            alert("Event added successfully!");
-        } else {
-            alert("Please fill out all fields!");
-        }
-    }
-
-    // Update event
-    function update_event(eventId) {
-        const eventName = document.getElementById("event_name").value;
-        const startDate = document.getElementById("event_start_date").value;
-        const endDate = document.getElementById("event_end_date").value;
-
-        const eventIndex = events.findIndex(event => event.id === eventId);
-        if (eventIndex !== -1) {
-            events[eventIndex].name = eventName;
-            events[eventIndex].start = startDate;
-            events[eventIndex].end = endDate;
-
-            displayEvents();
-            resetForm();
-            alert("Event updated successfully!");
-        } else {
-            alert("Event not found!");
-        }
-    }
-
-    // Delete event
-    function delete_event(eventId) {
-        events = events.filter(event => event.id !== eventId);
-        displayEvents();
-        alert("Event deleted successfully!");
-    }
-
-    // Cancel operation
-    function cancel_operation() {
-        resetForm();
-        alert("Operation canceled!");
-    }
-
-    // Display events in console or UI
-    function displayEvents() {
-        const eventList = document.getElementById("event-list");
-        if (eventList) {
-            eventList.innerHTML = ""; // Clear the list
-
-            events.forEach(event => {
-                const listItem = document.createElement("li");
-                listItem.textContent = `${event.name} (${event.start} - ${event.end})`;
-
-                // Edit button
-                const editButton = document.createElement("button");
-                editButton.textContent = "Edit";
-                editButton.onclick = () => {
-                    populateForm(event);
-                };
-
-                // Delete button
-                const deleteButton = document.createElement("button");
-                deleteButton.textContent = "Delete";
-                deleteButton.onclick = () => {
-                    delete_event(event.id);
-                };
-
-                listItem.appendChild(editButton);
-                listItem.appendChild(deleteButton);
-                eventList.appendChild(listItem);
-            });
-        }
-    }
-
-    // Populate form for editing
-    function populateForm(event) {
-        document.getElementById("event_name").value = event.name;
-        document.getElementById("event_start_date").value = event.start;
-        document.getElementById("event_end_date").value = event.end;
-
-        const saveButton = document.querySelector(".btn-primary");
-        saveButton.textContent = "Update Event";
-        saveButton.onclick = () => update_event(event.id);
-    }
-
-    // Reset form fields
-    function resetForm() {
-        document.getElementById("event_name").value = "";
-        document.getElementById("event_start_date").value = "";
-        document.getElementById("event_end_date").value = "";
-
-        const saveButton = document.querySelector(".btn-primary");
-        saveButton.textContent = "Save Event";
-        saveButton.onclick = save_event;
-    }
-
-    // Example: Display event list container in the UI
-    document.body.innerHTML += `<ul id="event-list"></ul>`;
-
-</script>
-        <div class="dropdown">
-            <button class="create-button" id="createButton">+ Créer</button>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Add New Event</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">�</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="img-container">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label for="event_name">Event name</label>
-                                        <input type="text" name="event_name" id="event_name" class="form-control" placeholder="Enter your event name">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="event_start_date">Event start</label>
-                                        <input type="date" name="event_start_date" id="event_start_date" class="form-control onlydatepicker" placeholder="Event start date">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="event_end_date">Event end</label>
-                                        <input type="date" name="event_end_date" id="event_end_date" class="form-control" placeholder="Event end date">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="save_event()">Save Event</button>
-                    </div>
-                </div>
-                <a href="#" class="dropdown-item">Evénement</a>
-                <a href="#" class="dropdown-item">Tache</a>
-                <a href="#" class="dropdown-item">Planning des rendez-vous</a>
-            </div>
-        </div>
-
+    <div>
+        <div><h1 align="center">Calendrier</h1></div>
         <div class="modal" id="myModal">
-        <div class="modal-content">
-            <h2 id="details">Enter Details</h2>
-            <input type="text" id="userInput" placeholder="Type something...">
-            <h5 id="errorMessage" style="color: red"></h5>
-            <div class="modal-buttons">
-                <button class="close-button"  id="closeModal">Delete</button>
-                <button class="submit-button" id="submitModal">Update</button>
+            <div class="modal-content">
+                <h2 id="details">Enter Details</h2>
+                <input type="text" id="userInput" placeholder="Type something...">
+                <h5 id="errorMessage" style="color: red"></h5>
+                <div class="modal-buttons">
+                    <button class="close-button"  id="closeModal">Delete</button>
+                    <button class="submit-button" id="submitModal">Update</button>
+                </div>
             </div>
         </div>
-    </div>
-        <br />
-        <h2 align="center">Calendrier</h2>
         <br />
         <div class="container">
             <div id="calendar"></div>
         </div>
+    </div>
+
+<!--Titre de l'evenement-->
+<script>
+    $(document).ready(function () {
+        // Initialisation du calendrier
+        $('#calendar').fullCalendar({
+            defaultView: 'month',
+            events: [] // Liste des événements initialement vide
+        });
+
+        // Gestion de la soumission du formulaire
+        $('#eventForm').on('submit', function (e) {
+            e.preventDefault();
+
+            // Récupérer les données saisies par l'utilisateur
+            var title = $('#eventTitle').val();
+            var start = $('#startDate').val();
+            var end = $('#endDate').val();
+
+            // Vérifier que les champs sont remplis
+            if (title && start && end) {
+                // Ajouter l'événement au calendrier
+                $('#calendar').fullCalendar('renderEvent', {
+                    title: title,
+                    start: moment(start).format("YYYY-MM-DD HH:mm:ss"),
+                    end: moment(end).format("YYYY-MM-DD HH:mm:ss")
+                }, true);
+
+                // Réinitialiser le formulaire
+                $('#eventForm')[0].reset();
+            } else {
+                alert('Veuillez remplir tous les champs.');
+            }
+        });
+    });
+</script>
+    <div>
+        <h2>Ajouter un événement</h2><br>
+        <form id="eventForm">
+            <label for="eventTitle">Titre de l'événement :</label>
+            <input type="text" id="eventTitle" required><br><br>
+
+            <label for="startDate">Date de début :</label>
+            <input type="datetime-local" id="startDate" required><br><br>
+
+            <label for="endDate">Date de fin :</label>
+            <input type="datetime-local" id="endDate" required><br><br>
+
+            <button type="submit">Ajouter l'événement</button>
+        </form>
+        <hr>
+        <div id="calendar"></div>
+    </div>
+
+
+
 
 </body>
 </html>
+
+
