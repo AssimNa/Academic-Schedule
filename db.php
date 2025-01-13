@@ -5,7 +5,7 @@ $user = 'root';      // Database username
 $pass = '';          // Database password
 $dbname = 'mbrouk'; // Database name
 
-// Create connection
+//create connection
 $conn = new mysqli($host, $user, $pass, $dbname);
 
 // Check connection

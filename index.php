@@ -345,7 +345,7 @@
                     <div id="calendar"></div>
                 </div>
             </div>
-    <!--Ajouter un evenement-->
+    <!--Ajout d'un evenement-->
         <div class="evenement">
         <h2>Ajouter un événement</h2><br>
         <form id="eventForm">
