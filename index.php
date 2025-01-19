@@ -21,12 +21,8 @@
         }
 
         @keyframes gradientBackground {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
             100% {
                 background-position: 0% 50%;
             }
@@ -95,6 +91,131 @@
             color: white;
         }
     </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(90deg, #1e3c72, #2a5298, #1c1c1c, #0d3b66);
+            background-size: 400% 400%;
+            animation: gradientBackground 15s ease infinite;
+            font-family: Arial, sans-serif;
+            color: blue;
+        }
+
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #ffffff;
+            font-size: 2.5em;
+        }
+
+        #addEventButton {
+            display: inline-block;
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #1e3c72;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        #addEventButton:hover {
+            background-color: #2a5298;
+        }
+
+        #calendar-container {
+            margin: 40px auto;
+            max-width: 80%;
+        }
+
+        #calendar {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+
+    <h1>Calendrier</h1>
+    <a id="addEventButton" href="ajouter-evenement.html">Ajouter un événement</a>
+
+
+    <script>
+        $(document).ready(function () {
+            // Charger les événements depuis le Local Storage
+            const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+
+            // Initialisation du calendrier FullCalendar
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                events: events // Charger les événements
+            });
+        });
+
+
+
+
+        // add,cancel,delete,update
+
+        eventClick: function (event) {
+            const modal = document.getElementById("myModal");
+            const userInput = document.getElementById("userInput");
+            const errorMessage = document.getElementById("errorMessage");
+            const deleteButton = document.getElementById("closeModal");
+            const updateButton = document.getElementById("submitModal");
+
+            // Initialiser le modal
+            errorMessage.textContent = "";
+            userInput.value = event.title;
+            modal.style.display = "flex";
+
+            // Configurer le bouton de suppression
+            deleteButton.textContent = "Supprimer";
+            deleteButton.style.backgroundColor = "red";
+            deleteButton.onclick = function () {
+                const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+                const updatedEvents = events.filter(e => e.start !== event.start.format() || e.end !== event.end.format());
+                localStorage.setItem('calendarEvents', JSON.stringify(updatedEvents));
+                $('#calendar').fullCalendar('removeEvents', event._id); // Supprimer l'événement visuellement
+                modal.style.display = "none";
+            };
+
+            // Configurer le bouton de mise à jour
+            updateButton.textContent = "Mettre à jour";
+            updateButton.style.backgroundColor = "green";
+            updateButton.onclick = function () {
+                if (userInput.value) {
+                    const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+                    const updatedEvents = events.map(e => {
+                        if (e.start === event.start.format() && e.end === event.end.format()) {
+                            return { ...e, title: userInput.value }; // Met à jour le titre
+                        }
+                        return e;
+                    });
+                    localStorage.setItem('calendarEvents', JSON.stringify(updatedEvents));
+                    event.title = userInput.value; // Met à jour visuellement
+                    $('#calendar').fullCalendar('updateEvent', event);
+                    modal.style.display = "none";
+                } else {
+                    errorMessage.textContent = "Le titre ne peut pas être vide !";
+                }
+            };
+        }
+
+    </script>
     <style>
         /* Animation de fond */
         body {
@@ -196,6 +317,7 @@
             background-color: #2a5298;
         }
     </style>
+
     <script>
         $(document).ready(function () {
             var calendar = $('#calendar').fullCalendar({
@@ -328,7 +450,7 @@
 
     </script>
         <div>
-                <div><h1 align="center">Calendrier</h1></div>
+<!--                <div><h1 align="center">Calendrier</h1></div>-->
                 <div class="modal" id="myModal">
                     <div class="modal-content">
                         <h2 id="details">Enter Details</h2>
@@ -345,58 +467,8 @@
                     <div id="calendar"></div>
                 </div>
             </div>
-    <!--Ajout d'un evenement-->
-        <div class="evenement">
-        <h2>Ajouter un événement</h2><br>
-        <form id="eventForm">
-            <label for="eventTitle">Titre de l'événement :</label>
-            <input type="text" id="eventTitle" required><br>
 
-            <label for="startDate">Date de début :</label>
-            <input type="datetime-local" id="startDate" required><br>
-
-            <label for="endDate">Date de fin :</label>
-            <input type="datetime-local" id="endDate" required><br>
-
-            <button type="submit">Ajouter l'événement</button>
-        </form>
-
-    </div>
-
-    <script>
-        $(document).ready(function () {
-            // Initialisation du calendrier
-            $('#calendar').fullCalendar({
-                defaultView: 'month',
-                events: [] // Liste des événements initialement vide
-            });
-
-            // Gestion de la soumission du formulaire
-            $('#eventForm').on('submit', function (e) {
-                e.preventDefault();
-
-                // Récupérer les données saisies par l'utilisateur
-                var title = $('#eventTitle').val();
-                var start = $('#startDate').val();
-                var end = $('#endDate').val();
-
-                // Vérifier que les champs sont remplis
-                if (title && start && end) {
-                    // Ajouter l'événement au calendrier
-                    $('#calendar').fullCalendar('renderEvent', {
-                        title: title,
-                        start: moment(start).format("YYYY-MM-DD HH:mm:ss"),
-                        end: moment(end).format("YYYY-MM-DD HH:mm:ss")
-                    }, true);
-
-                    // Réinitialiser le formulaire
-                    $('#eventForm')[0].reset();
-                } else {
-                    alert('Veuillez remplir tous les champs.');
-                }
-            });
-        });
-    </script>
+<!-- mettre a jour et supprimer-->
 
 </body>
 </html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter un événement</title>
+  <style>
+    /* Animation de fond */
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(90deg, #1e3c72, #2a5298, #1c1c1c, #0d3b66);
+      background-size: 600% 600%;
+      animation: gradientBackground 10s ease infinite;
+      font-family: Arial, sans-serif;
+    }
+
+    @keyframes gradientBackground {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Style du formulaire */
+    .evenement {
+      margin: 50px auto;
+      max-width: 600px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .evenement h2 {
+      text-align: center;
+      color: #1e3c72;
+    }
+
+    .evenement label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #1e3c72;
+    }
+
+    .evenement input, .evenement button {
+      width: 100%;
+      padding: 5px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 2em;
+    }
+
+    .evenement button {
+      background-color: #1e3c72;
+      color: white;
+      cursor: pointer;
+    }
+
+    .evenement button:hover {
+      background-color: #032445;
+    }
+  </style>
+</head>
+<body>
+<div class="evenement">
+  <h2>Ajouter un événement</h2><br>
+  <form id="eventForm">
+    <label for="eventTitle">Titre de l'événement :</label>
+    <input type="text" id="eventTitle" required><br>
+
+    <label for="startDate">Date de début :</label>
+    <input type="datetime-local" id="startDate" required><br>
+
+    <label for="endDate">Date de fin :</label>
+    <input type="datetime-local" id="endDate" required><br>
+
+    <button type="submit">Ajouter l'événement</button>
+  </form>
+</div>
+<script>
+  document.getElementById('eventForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Récupérer les valeurs des champs du formulaire
+    const eventTitle = document.getElementById('eventTitle').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    // Vérifier que les champs sont valides
+    if (!eventTitle || !startDate || !endDate) {
+      alert("Veuillez remplir tous les champs !");
+      return;
+    }
+
+    // Ajouter l'événement au Local Storage
+    const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+    events.push({
+      title: eventTitle,
+      start: startDate,
+      end: endDate,
+    });
+    localStorage.setItem('calendarEvents', JSON.stringify(events));
+
+    // Rediriger vers la page du calendrier
+    window.location.href = "index.php"; // Remplacez par la page de votre calendrier
+  });
+</script>
+</body>
+</html>
