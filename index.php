@@ -155,9 +155,13 @@ $user_id = $_SESSION['id'];
     </style>
 
     <h1>Calendrier</h1>
-    <a id="addEventButton" href="ajouter-evenement.html">Logout</a>
+    <a id="addEventButton"  href="javascript:void(0);" onclick="logout()">Logout</a>
 
     <script>
+        function logout() {
+            // Send the user to logout.php
+            window.location.href = 'logout.php';
+        }
         $(document).ready(function () {
             // Charger les événements depuis le Local Storage
             const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
