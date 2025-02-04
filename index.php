@@ -165,9 +165,6 @@
             });
         });
 
-
-
-
         // add,cancel,delete,update
 
         eventClick: function (event) {
@@ -467,8 +464,6 @@
                     <div id="calendar"></div>
                 </div>
             </div>
-
-<!-- mettre a jour et supprimer-->
 
 </body>
 </html>
