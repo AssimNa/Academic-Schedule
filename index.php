@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+include 'db.php';
+
+$role = $_SESSION['role']; // Admin or Teacher
+$user_id = $_SESSION['id'];
+?>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -145,8 +155,7 @@
     </style>
 
     <h1>Calendrier</h1>
-    <a id="addEventButton" href="ajouter-evenement.html">Ajouter un événement</a>
-
+    <a id="addEventButton" href="ajouter-evenement.html">Logout</a>
 
     <script>
         $(document).ready(function () {
@@ -178,6 +187,16 @@
             errorMessage.textContent = "";
             userInput.value = event.title;
             modal.style.display = "flex";
+
+
+            const formattedDate = "2025-02-04 09:29:00";
+
+// Reverse the formatted date string to match the datetime-local format 'YYYY-MM-DDTHH:MM'
+const dateForInput = formattedDate.replace(" ", "T").substring(0, 16);
+
+// Assuming you have an input of type datetime-local with id="myDatetimeInput"
+document.getElementById('myDatetimeInput').value = dateForInput;
+
 
             // Configurer le bouton de suppression
             deleteButton.textContent = "Supprimer";
@@ -351,12 +370,44 @@
                     const newUpdateButton = document.getElementById("submitModal");
                     const newDeleteButton = document.getElementById("closeModal");
 
+
+
+
                     newUpdateButton.addEventListener("click", function () {
+                        const dateObj = new Date(document.getElementById("startDate").value);
+
+                            // Format the date into 'YYYY-MM-DD HH:MM:SS'
+                            const newDebut = dateObj.getFullYear() + '-' 
+                                            + String(dateObj.getMonth() + 1).padStart(2, '0') + '-'
+                                            + String(dateObj.getDate()).padStart(2, '0') + ' '
+                                            + String(dateObj.getHours()).padStart(2, '0') + ':'
+                                            + String(dateObj.getMinutes()).padStart(2, '0') + ':'
+                                            + String(dateObj.getSeconds()).padStart(2, '0');
+
+
+
+                            const dateObjend = new Date(document.getElementById("endDate").value);
+
+                            // Format the date into 'YYYY-MM-DD HH:MM:SS'
+                            const newFin = dateObjend.getFullYear() + '-' 
+                                            + String(dateObjend.getMonth() + 1).padStart(2, '0') + '-'
+                                            + String(dateObjend.getDate()).padStart(2, '0') + ' '
+                                            + String(dateObjend.getHours()).padStart(2, '0') + ':'
+                                            + String(dateObjend.getMinutes()).padStart(2, '0') + ':'
+                                            + String(dateObjend.getSeconds()).padStart(2, '0');
                         if (userInput.value) {
+                            console.log({ title: userInput.value, start: newDebut, end: newFin })
+                            const role = '<?php echo $role; ?>'; // 'admin' or 'teacher'
+                            if (role === 'admin') {
+                                affected_to = parseInt(document.getElementById("teacherSelect").value);
+                            } else {
+                                // Otherwise, use the current user's ID
+                                affected_to = '<?php echo $user_id; ?>';;
+                            }
                             $.ajax({
                                 url: "events.php?action=insert",
                                 type: "POST",
-                                data: { title: userInput.value, start: startFormatted, end: endFormatted },
+                                data: { title: userInput.value, start: newDebut, end: newFin, affected_to:affected_to },
                                 success: function () {
                                     calendar.fullCalendar('refetchEvents');
                                     modal.style.display = "none";
@@ -386,10 +437,17 @@
                     deleteButton.textContent = "Delete";
                     updateButton.textContent = "Update";
 
+
+
+
+                    
+
                     var id = event.id;
                     var startFormatted = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
                     var endFormatted = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
 
+
+                    
                     updateButton.replaceWith(updateButton.cloneNode(true));
                     deleteButton.replaceWith(deleteButton.cloneNode(true));
 
@@ -448,17 +506,46 @@
     </script>
         <div>
 <!--                <div><h1 align="center">Calendrier</h1></div>-->
-                <div class="modal" id="myModal">
-                    <div class="modal-content">
-                        <h2 id="details">Enter Details</h2>
-                        <input type="text" id="userInput" placeholder="Type something...">
-                        <h5 id="errorMessage" style="color: red"></h5>
-                        <div class="modal-buttons">
-                            <button class="close-button"  id="closeModal">Delete</button>
-                            <button class="submit-button" id="submitModal">Update</button>
-                        </div>
-                    </div>
-                </div>
+<div class="modal" id="myModal">
+    <div class="modal-content">
+        <h2 id="details">Enter Details</h2>
+        
+        <!-- Combobox for teachers -->
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>        
+        <label for="teacherSelect">Select Teacher:</label>
+        <select id="teacherSelect">
+            <option value="">-- Select Teacher --</option>
+            <?php
+            // Query to fetch all users with the 'user' role
+            $stmt = $conn->prepare("SELECT id,name FROM user WHERE role = 'user'");
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            // Loop through the users and display them in the select options
+            while ($user = $result->fetch_assoc()) {
+                echo '<option value="' . htmlspecialchars($user['id']) . '">' . htmlspecialchars($user['name']) . '</option>';
+            }
+            ?>
+        </select>
+    <?php endif; ?>
+        <br>
+        <label for="userInput">Titre de l'événement :</label>
+    <input type="text" id="userInput" ><br>
+
+    <label for="startDate">Date de début :</label>
+    <input type="datetime-local" id="startDate" ><br>
+
+    <label for="endDate">Date de fin :</label>
+    <input type="datetime-local" id="endDate" ><br>
+        <h5 id="errorMessage" style="color: red"></h5>
+        
+        <div class="modal-buttons">
+            <button class="close-button" id="closeModal">Delete</button>
+            <button class="submit-button" id="submitModal">Update</button>
+        </div>
+    </div>
+</div>
+
                 <br />
                 <div class="container">
                     <div id="calendar"></div>
