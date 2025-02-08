@@ -6,9 +6,9 @@ include 'db.php';
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($action == 'load') {
-    $query = "SELECT title,e.id As event_id, u.id as user_id,start_event, end_event,name FROM events e JOIN user u ON e.affected_to = u.id  WHERE u.id = " .$_SESSION['id']  ." ;";
+    $query = "SELECT title,e.id As event_id, u.id as user_id,start_event, end_event,name,e.affected_to as affected_id FROM events e JOIN user u ON e.affected_to = u.id  WHERE u.id = " .$_SESSION['id']  ." ;";
     if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin')
-        $query = "SELECT title,e.id As event_id, u.id as user_id,start_event, end_event,name FROM events e JOIN user u ON e.affected_to = u.id;";
+        $query = "SELECT title,e.id As event_id, u.id as user_id,start_event, end_event,name,e.affected_to as affected_id FROM events e JOIN user u ON e.affected_to = u.id;";
     $result = $conn->query($query);
     $data = [];
     while ($row = $result->fetch_assoc()) {
@@ -18,7 +18,7 @@ if ($action == 'load') {
                 'title' => $row['title'] ."--" .$row['name'],
                 'start' => $row['start_event'],
                 'end' => $row['end_event'],
-                'affected_to' => $row['name']
+                'affected_to' => $row['affected_id']
             ];
         } else {
             $data[] = [
@@ -26,7 +26,7 @@ if ($action == 'load') {
                 'title' => $row['title'],
                 'start' => $row['start_event'],
                 'end' => $row['end_event'],
-                'affected_to' => $row['name']
+                'affected_to' => $row['affected_id']
             ];
         }
 

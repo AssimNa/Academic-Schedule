@@ -2,7 +2,11 @@
 session_start();
 
 include 'db.php';
-
+if (!isset($_SESSION['role']) || !isset($_SESSION['id'])) {
+    // Redirect to login.php if not logged in
+    header("Location: login.php");
+    exit(); // Ensure the script stops executing after the redirect
+}
 $role = $_SESSION['role']; // Admin or Teacher
 $user_id = $_SESSION['id'];
 ?>
@@ -21,7 +25,6 @@ $user_id = $_SESSION['id'];
 </head>
 <body>
     <style>
-        /* Animation de fond avec un dégradé */
         body {
             margin: 0;
             padding: 0;
@@ -29,7 +32,6 @@ $user_id = $_SESSION['id'];
             background-size: 400% 400%;
             animation: gradientBackground 15s ease infinite;
         }
-
         @keyframes gradientBackground {
             0% {background-position: 0% 50%;}
             50% {background-position: 100% 50%;}
@@ -155,13 +157,9 @@ $user_id = $_SESSION['id'];
     </style>
 
     <h1>Calendrier</h1>
-    <a id="addEventButton"  href="javascript:void(0);" onclick="logout()">Logout</a>
+    <a id="addEventButton"  href="logout.php" onclick="logout()">Logout</a>
 
     <script>
-        function logout() {
-            // Send the user to logout.php
-            window.location.href = 'logout.php';
-        }
         $(document).ready(function () {
             // Charger les événements depuis le Local Storage
             const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
@@ -433,10 +431,12 @@ document.getElementById('myDatetimeInput').value = dateForInput;
                     const modal = document.getElementById("myModal");
                     const deleteButton = document.getElementById("closeModal");
                     const updateButton = document.getElementById("submitModal");
-
+                    
                     errorMessage.textContent = "";
-                    userInput.value = event.title;
+                    userInput.value = event.title.split("--")[0];
+                    document.getElementById("teacherSelect").value = event.affected_to;
                     modal.style.display = "flex";
+
                     deleteButton.style.backgroundColor = "red";
                     deleteButton.textContent = "Delete";
                     updateButton.textContent = "Update";
@@ -445,7 +445,7 @@ document.getElementById('myDatetimeInput').value = dateForInput;
 
 
                     
-
+                    
                     var id = event.id;
                     var startFormatted = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
                     var endFormatted = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
