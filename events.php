@@ -49,7 +49,15 @@ if ($action == 'update') {
     $title = $_POST['title'];
     $start = $_POST['start'];
     $end = $_POST['end'];
+    $affected_to = $_POST['affected_to'];
+
+
+
     $query = "UPDATE events SET title='$title', start_event='$start', end_event='$end' WHERE id='$id'";
+    if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin')
+        $query = "UPDATE events SET title='$title', start_event='$start', end_event='$end',  affected_to='$affected_to' WHERE id='$id'";
+
+  
     $conn->query($query);
     echo 'Event Updated';
 }

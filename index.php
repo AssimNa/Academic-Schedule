@@ -337,159 +337,177 @@ document.getElementById('myDatetimeInput').value = dateForInput;
     </style>
 
     <script>
-        $(document).ready(function () {
-            var calendar = $('#calendar').fullCalendar({
-                editable: true,
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right : 'month,agendaWeek,agendaDay'
-                },
-                events: "events.php?action=load",
-                selectable: true,
-                selectHelper: true,
-                select: function (start, end, allDay) {
-                    const userInput = document.getElementById("userInput");
-                    const modal = document.getElementById("myModal");
-                    const deleteButton = document.getElementById("closeModal");
-                    const updateButton = document.getElementById("submitModal");
-                    const errorMessage = document.getElementById("errorMessage");
+$(document).ready(function () {
+    var calendar = $('#calendar').fullCalendar({
+        editable: true,
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+        },
+        events: "events.php?action=load",
+        selectable: true,
+        selectHelper: true,
+        select: function (start, end, allDay) {
+            const userInput = document.getElementById("userInput");
+            const modal = document.getElementById("myModal");
+            const deleteButton = document.getElementById("closeModal");
+            const updateButton = document.getElementById("submitModal");
+            const errorMessage = document.getElementById("errorMessage");
 
+            errorMessage.textContent = "";
+            userInput.value = "";
+            modal.style.display = "flex";
+            deleteButton.style.backgroundColor = "#3e403d";
+            deleteButton.textContent = "Cancel";
+            updateButton.textContent = "Add";
 
-                    errorMessage.textContent = "";
-                    userInput.value = "";
-                    modal.style.display = "flex";
-                    deleteButton.style.backgroundColor = "#3e403d";
-                    deleteButton.textContent = "Cancel";
-                    updateButton.textContent = "Add";
+            var startFormatted = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
+            var endFormatted = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
 
-                    var startFormatted = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-                    var endFormatted = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+            // Reset buttons to ensure proper handling
+            updateButton.replaceWith(updateButton.cloneNode(true));
+            deleteButton.replaceWith(deleteButton.cloneNode(true));
 
-                    updateButton.replaceWith(updateButton.cloneNode(true));
-                    deleteButton.replaceWith(deleteButton.cloneNode(true));
+            const newUpdateButton = document.getElementById("submitModal");
+            const newDeleteButton = document.getElementById("closeModal");
 
-                    const newUpdateButton = document.getElementById("submitModal");
-                    const newDeleteButton = document.getElementById("closeModal");
+            newUpdateButton.addEventListener("click", function () {
+                const dateObj = new Date(document.getElementById("startDate").value);
 
+                // Format the start date into 'YYYY-MM-DD HH:MM:SS'
+                const newDebut = dateObj.getFullYear() + '-' 
+                    + String(dateObj.getMonth() + 1).padStart(2, '0') + '-'
+                    + String(dateObj.getDate()).padStart(2, '0') + ' '
+                    + String(dateObj.getHours()).padStart(2, '0') + ':'
+                    + String(dateObj.getMinutes()).padStart(2, '0') + ':'
+                    + String(dateObj.getSeconds()).padStart(2, '0');
 
+                const dateObjend = new Date(document.getElementById("endDate").value);
 
+                // Format the end date into 'YYYY-MM-DD HH:MM:SS'
+                const newFin = dateObjend.getFullYear() + '-' 
+                    + String(dateObjend.getMonth() + 1).padStart(2, '0') + '-'
+                    + String(dateObjend.getDate()).padStart(2, '0') + ' '
+                    + String(dateObjend.getHours()).padStart(2, '0') + ':'
+                    + String(dateObjend.getMinutes()).padStart(2, '0') + ':'
+                    + String(dateObjend.getSeconds()).padStart(2, '0');
 
-                    newUpdateButton.addEventListener("click", function () {
-                        const dateObj = new Date(document.getElementById("startDate").value);
+                if (userInput.value) {
+                    console.log({ title: userInput.value, start: newDebut, end: newFin });
 
-                            // Format the date into 'YYYY-MM-DD HH:MM:SS'
-                            const newDebut = dateObj.getFullYear() + '-' 
-                                            + String(dateObj.getMonth() + 1).padStart(2, '0') + '-'
-                                            + String(dateObj.getDate()).padStart(2, '0') + ' '
-                                            + String(dateObj.getHours()).padStart(2, '0') + ':'
-                                            + String(dateObj.getMinutes()).padStart(2, '0') + ':'
-                                            + String(dateObj.getSeconds()).padStart(2, '0');
+                    const role = '<?php echo $role; ?>'; // 'admin' or 'teacher'
+                    let affected_to;
+                    if (role === 'admin') {
+                        affected_to = parseInt(document.getElementById("teacherSelect").value);
+                    } else {
+                        // Use current user's ID if not admin
+                        affected_to = '<?php echo $user_id; ?>';
+                    }
 
-
-
-                            const dateObjend = new Date(document.getElementById("endDate").value);
-
-                            // Format the date into 'YYYY-MM-DD HH:MM:SS'
-                            const newFin = dateObjend.getFullYear() + '-' 
-                                            + String(dateObjend.getMonth() + 1).padStart(2, '0') + '-'
-                                            + String(dateObjend.getDate()).padStart(2, '0') + ' '
-                                            + String(dateObjend.getHours()).padStart(2, '0') + ':'
-                                            + String(dateObjend.getMinutes()).padStart(2, '0') + ':'
-                                            + String(dateObjend.getSeconds()).padStart(2, '0');
-                        if (userInput.value) {
-                            console.log({ title: userInput.value, start: newDebut, end: newFin })
-                            const role = '<?php echo $role; ?>'; // 'admin' or 'teacher'
-                            if (role === 'admin') {
-                                affected_to = parseInt(document.getElementById("teacherSelect").value);
-                            } else {
-                                // Otherwise, use the current user's ID
-                                affected_to = '<?php echo $user_id; ?>';;
-                            }
-                            $.ajax({
-                                url: "events.php?action=insert",
-                                type: "POST",
-                                data: { title: userInput.value, start: newDebut, end: newFin, affected_to:affected_to },
-                                success: function () {
-                                    calendar.fullCalendar('refetchEvents');
-                                    modal.style.display = "none";
-                                    console.log("Added Successfully");
-                                }
-                            });
-                        } else {
-                            errorMessage.textContent = "Please fill up the input";
+                    $.ajax({
+                        url: "events.php?action=insert",
+                        type: "POST",
+                        data: { title: userInput.value, start: newDebut, end: newFin, affected_to: affected_to },
+                        success: function () {
+                            calendar.fullCalendar('refetchEvents');
+                            modal.style.display = "none";
+                            console.log("Added Successfully");
                         }
                     });
-
-                    newDeleteButton.addEventListener("click", function () {
-                        modal.style.display = "none";
-                    });
-                },
-                eventClick: function (event) {
-                    const errorMessage = document.getElementById("errorMessage");
-                    const userInput = document.getElementById("userInput");
-                    const modal = document.getElementById("myModal");
-                    const deleteButton = document.getElementById("closeModal");
-                    const updateButton = document.getElementById("submitModal");
-                    
-                    errorMessage.textContent = "";
-                    userInput.value = event.title.split("--")[0];
-                    document.getElementById("teacherSelect").value = event.affected_to;
-                    modal.style.display = "flex";
-
-                    deleteButton.style.backgroundColor = "red";
-                    deleteButton.textContent = "Delete";
-                    updateButton.textContent = "Update";
-
-
-
-
-                    
-                    
-                    var id = event.id;
-                    var startFormatted = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-                    var endFormatted = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-
-
-                    
-                    updateButton.replaceWith(updateButton.cloneNode(true));
-                    deleteButton.replaceWith(deleteButton.cloneNode(true));
-
-                    const newUpdateButton = document.getElementById("submitModal");
-                    const newDeleteButton = document.getElementById("closeModal");
-
-                    newDeleteButton.addEventListener("click", function () {
-                        $.ajax({
-                            url: "events.php?action=delete",
-                            type: "POST",
-                            data: { id: id },
-                            success: function () {
-                                calendar.fullCalendar('refetchEvents');
-                                modal.style.display = "none";
-                                console.log("Event Removed");
-                            }
-                        });
-                    });
-
-                    newUpdateButton.addEventListener("click", function () {
-                        if (userInput.value) {
-                            $.ajax({
-                                url: "events.php?action=update",
-                                type: "POST",
-                                data: { title: userInput.value, start: startFormatted, end: endFormatted, id: id },
-                                success: function () {
-                                    calendar.fullCalendar('refetchEvents');
-                                    modal.style.display = "none";
-                                    console.log("Event Updated");
-                                }
-                            });
-                        } else {
-                            errorMessage.textContent = "Please fill up the input";
-                        }
-                    });
+                } else {
+                    errorMessage.textContent = "Please fill up the input";
                 }
             });
+
+            newDeleteButton.addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+        },
+
+        eventClick: function (event) {
+            console.log("Event Data: ", event);
+    const errorMessage = document.getElementById("errorMessage");
+    const userInput = document.getElementById("userInput");
+    const modal = document.getElementById("myModal");
+    const deleteButton = document.getElementById("closeModal");
+    const updateButton = document.getElementById("submitModal");
+    
+    errorMessage.textContent = "";
+    userInput.value = event.title.split("--")[0];
+    document.getElementById("teacherSelect").value = event.affected_to;
+    modal.style.display = "flex";
+
+    deleteButton.style.backgroundColor = "red";
+    deleteButton.textContent = "Delete";
+    updateButton.textContent = "Update";
+
+    // Ensure that the end date is not null
+    var startFormatted = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
+    var endFormatted = event.end ? $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss") : null;  // Handle null end date
+
+    console.log("Event Start:", startFormatted);  // Debug start date
+    console.log("Event End:", endFormatted);  // Debug end date
+
+// Convert to a Date object
+var dynamicDate = new Date(endFormatted.replace(" ", "T")); // Replace space with "T" for valid ISO format
+
+document.getElementById('endDate').value = dynamicDate.toISOString().slice(0, 19);
+
+
+
+var dynamicDate = new Date(startFormatted.replace(" ", "T")); // Replace space with "T" for valid ISO format
+
+document.getElementById('startDate').value = dynamicDate.toISOString().slice(0, 19);
+
+    updateButton.replaceWith(updateButton.cloneNode(true));
+    deleteButton.replaceWith(deleteButton.cloneNode(true));
+
+    const newUpdateButton = document.getElementById("submitModal");
+    const newDeleteButton = document.getElementById("closeModal");
+
+    newDeleteButton.addEventListener("click", function () {
+        $.ajax({
+            url: "events.php?action=delete",
+            type: "POST",
+            data: { id: event.id },
+            success: function () {
+                calendar.fullCalendar('refetchEvents');
+                modal.style.display = "none";
+                console.log("Event Removed");
+            }
         });
+    });
+
+    newUpdateButton.addEventListener("click", function () {
+        if (userInput.value) {
+            const role = '<?php echo $role; ?>'; // 'admin' or 'teacher'
+                    let affected_to;
+                    if (role === 'admin') {
+                        affected_to = parseInt(document.getElementById("teacherSelect").value);
+                    } else {
+                        // Use current user's ID if not admin
+                        affected_to = '<?php echo $user_id; ?>';
+                    }
+
+            $.ajax({
+                url: "events.php?action=update",
+                type: "POST",
+                data: { title: userInput.value, start: startFormatted, end: endFormatted, id: event.id, affected_to:affected_to },
+                success: function () {
+                    calendar.fullCalendar('refetchEvents');
+                    modal.style.display = "none";
+                    console.log("Event Updated");
+                }
+            });
+        } else {
+            errorMessage.textContent = "Please fill up the input";
+        }
+    });
+}
+    });
+});
+
         document.addEventListener("DOMContentLoaded", function () {
             const createButton = document.getElementById("createButton");
             const dropdownMenu = document.getElementById("dropdownMenu");
