@@ -159,81 +159,7 @@ $user_id = $_SESSION['id'];
     <h1>Calendrier</h1>
     <a id="addEventButton"  href="logout.php" onclick="logout()">Logout</a>
 
-    <script>
-        $(document).ready(function () {
-            // Charger les événements depuis le Local Storage
-            const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
 
-            // Initialisation du calendrier FullCalendar
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay'
-                },
-                editable: true,
-                events: events // Charger les événements
-            });
-        });
-
-        // add,cancel,delete,update
-
-        eventClick: function (event) {
-            const modal = document.getElementById("myModal");
-            const userInput = document.getElementById("userInput");
-            const errorMessage = document.getElementById("errorMessage");
-            const deleteButton = document.getElementById("closeModal");
-            const updateButton = document.getElementById("submitModal");
-
-            // Initialiser le modal
-            errorMessage.textContent = "";
-            userInput.value = event.title;
-            modal.style.display = "flex";
-
-
-            const formattedDate = "2025-02-04 09:29:00";
-
-// Reverse the formatted date string to match the datetime-local format 'YYYY-MM-DDTHH:MM'
-const dateForInput = formattedDate.replace(" ", "T").substring(0, 16);
-
-// Assuming you have an input of type datetime-local with id="myDatetimeInput"
-document.getElementById('myDatetimeInput').value = dateForInput;
-
-
-            // Configurer le bouton de suppression
-            deleteButton.textContent = "Supprimer";
-            deleteButton.style.backgroundColor = "red";
-            deleteButton.onclick = function () {
-                const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
-                const updatedEvents = events.filter(e => e.start !== event.start.format() || e.end !== event.end.format());
-                localStorage.setItem('calendarEvents', JSON.stringify(updatedEvents));
-                $('#calendar').fullCalendar('removeEvents', event._id); // Supprimer l'événement visuellement
-                modal.style.display = "none";
-            };
-
-            // Configurer le bouton de mise à jour
-            updateButton.textContent = "Mettre à jour";
-            updateButton.style.backgroundColor = "green";
-            updateButton.onclick = function () {
-                if (userInput.value) {
-                    const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
-                    const updatedEvents = events.map(e => {
-                        if (e.start === event.start.format() && e.end === event.end.format()) {
-                            return { ...e, title: userInput.value }; // Met à jour le titre
-                        }
-                        return e;
-                    });
-                    localStorage.setItem('calendarEvents', JSON.stringify(updatedEvents));
-                    event.title = userInput.value; // Met à jour visuellement
-                    $('#calendar').fullCalendar('updateEvent', event);
-                    modal.style.display = "none";
-                } else {
-                    errorMessage.textContent = "Le titre ne peut pas être vide !";
-                }
-            };
-        }
-
-    </script>
     <style>
         /* Animation de fond */
         body {
@@ -435,7 +361,8 @@ $(document).ready(function () {
     
     errorMessage.textContent = "";
     userInput.value = event.title.split("--")[0];
-    document.getElementById("teacherSelect").value = event.affected_to;
+    var dd = document.getElementById("teacherSelect");
+    if (dd)dd.value = event.affected_to;
     modal.style.display = "flex";
 
     deleteButton.style.backgroundColor = "red";
