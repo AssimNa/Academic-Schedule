@@ -486,7 +486,6 @@ document.getElementById('startDate').value = dynamicDate.toISOString().slice(0, 
                     if (role === 'admin') {
                         affected_to = parseInt(document.getElementById("teacherSelect").value);
                     } else {
-                        // Use current user's ID if not admin
                         affected_to = '<?php echo $user_id; ?>';
                     }
 
