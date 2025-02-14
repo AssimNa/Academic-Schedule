@@ -48,100 +48,161 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup</title>
+    <title>Sign Up</title>
     <style>
+        /* Global Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            background: linear-gradient(45deg, #2c3e50, #34495e, #1abc9c);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s infinite alternate;
+            overflow: hidden;
         }
+
+        /* Animated Gradient Background */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Signup Container */
         .signup-container {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            width: 300px;
-        }
-        h2 {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
             text-align: center;
-            color: #333;
+            width: 350px;
+            animation: fadeIn 1.5s ease-out;
         }
+
+        /* Fade-in & Slide-in Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: 600;
+            animation: slideIn 1.2s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         label {
+            display: block;
             font-size: 14px;
-            color: #333;
+            text-align: left;
+            color: white;
+            margin-bottom: 5px;
         }
-        input[type="text"], input[type="password"] {
+
+        input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            transition: 0.3s;
         }
+
+        input:focus {
+            border-color: #f1c40f;
+            box-shadow: 0 0 12px rgba(241, 196, 15, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* Button Styling */
         button {
             width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: #fff;
+            padding: 12px;
+            background: #f1c40f;
+            color: black;
+            font-weight: bold;
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 18px;
             cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3);
         }
+
         button:hover {
-            background-color: #45a049;
+            background: #e1b700;
+            box-shadow: 0 6px 15px rgba(241, 196, 15, 0.5);
+            transform: translateY(-2px);
         }
-        .error {
-            color: red;
+
+        .login-link {
+            margin-top: 12px;
             font-size: 14px;
-            text-align: center;
+            color: white;
         }
-        .success {
-            color: green;
-            font-size: 14px;
-            text-align: center;
+
+        .login-link a {
+            color: #f1c40f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <div class="signup-container">
-        <h2>Sign Up</h2>
+<div class="signup-container">
+    <h2>Sign Up</h2>
 
-        <?php
-        // Display error message if credentials are invalid
-        if (isset($error_message)) {
-            echo '<p class="error">' . $error_message . '</p>';
-        }
+    <form method="POST" action="">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
 
-        // Display success message if the user has registered successfully
-        if (isset($_SESSION['success_message'])) {
-            echo '<p class="success">' . $_SESSION['success_message'] . '</p>';
-            unset($_SESSION['success_message']);
-        }
-        ?>
+        <label for="username">Email</label>
+        <input type="email" id="username" name="username" required>
 
-        <form method="POST" action="">
-            <label for="name">Name:</label><br>
-            <input style="width:93%" type="text" id="name" name="name" required><br><br>
-            <label for="username">Email:</label><br>
-            <input style="width:93%" type="text" id="username" name="username" required><br><br>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
 
-            <label for="password">Password:</label><br>
-            <input style="width:93%" type="password" id="password" name="password" required><br><br>
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
 
-            <label for="confirm_password">Confirm Password:</label><br>
-            <input style="width:93%" type="password" id="confirm_password" name="confirm_password" required ><br><br>
+        <button type="submit">Sign Up</button>
 
-            <button type="submit">Sign Up</button>
-        </form>
-
-        <p>Already have an account? <a href="index.php">Login here</a></p>
-    </div>
+        <p class="login-link">Already have an account? <a href="index.php">Login here</a></p>
+    </form>
+</div>
 
 </body>
 </html>
+
+

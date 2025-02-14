@@ -407,6 +407,26 @@ document.getElementById('startDate').value = dynamicDate.toISOString().slice(0, 
     });
 
     newUpdateButton.addEventListener("click", function () {
+        const dateObj = new Date(document.getElementById("startDate").value);
+
+// Format the start date into 'YYYY-MM-DD HH:MM:SS'
+const newDebut = dateObj.getFullYear() + '-' 
+    + String(dateObj.getMonth() + 1).padStart(2, '0') + '-'
+    + String(dateObj.getDate()).padStart(2, '0') + ' '
+    + String(dateObj.getHours()).padStart(2, '0') + ':'
+    + String(dateObj.getMinutes()).padStart(2, '0') + ':'
+    + String(dateObj.getSeconds()).padStart(2, '0');
+
+const dateObjend = new Date(document.getElementById("endDate").value);
+
+// Format the end date into 'YYYY-MM-DD HH:MM:SS'
+const newFin = dateObjend.getFullYear() + '-' 
+    + String(dateObjend.getMonth() + 1).padStart(2, '0') + '-'
+    + String(dateObjend.getDate()).padStart(2, '0') + ' '
+    + String(dateObjend.getHours()).padStart(2, '0') + ':'
+    + String(dateObjend.getMinutes()).padStart(2, '0') + ':'
+    + String(dateObjend.getSeconds()).padStart(2, '0');
+
         if (userInput.value) {
             const role = '<?php echo $role; ?>'; // 'admin' or 'teacher'
                     let affected_to;
@@ -419,7 +439,7 @@ document.getElementById('startDate').value = dynamicDate.toISOString().slice(0, 
             $.ajax({
                 url: "events.php?action=update",
                 type: "POST",
-                data: { title: userInput.value, start: startFormatted, end: endFormatted, id: event.id, affected_to:affected_to },
+                data: { title: userInput.value, start: newDebut, end: newFin, id: event.id, affected_to:affected_to },
                 success: function () {
                     calendar.fullCalendar('refetchEvents');
                     modal.style.display = "none";
